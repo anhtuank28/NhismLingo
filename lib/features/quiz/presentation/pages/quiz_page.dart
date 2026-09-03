@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/features/quiz/data/mock_quiz_data.dart';
+import 'package:nhims_lingo/features/quiz/domain/models/quiz_question_model.dart';
 import 'package:nhims_lingo/features/quiz/presentation/widgets/flashcard_widget.dart';
+import 'package:nhims_lingo/features/quiz/presentation/widgets/multiple_choice_widget.dart';
 
 class QuizPage extends StatefulWidget {
   final String lessonTitle;
@@ -18,11 +20,19 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   int _currentIndex = 0;
   final int _totalQuestions = mockQuizQuestions.length;
+  bool _canGoNext = true; // Gán giá trị mặc định thay vì dùng late
+
+  @override
+  void initState() {
+    super.initState();
+    _canGoNext = mockQuizQuestions[_currentIndex].type == QuestionType.flashcard;
+  }
 
   void _nextQuestion() {
     if (_currentIndex < _totalQuestions - 1) {
       setState(() {
         _currentIndex++;
+        _canGoNext = mockQuizQuestions[_currentIndex].type == QuestionType.flashcard;
       });
     } else {
       // Hoàn thành bài học
@@ -34,6 +44,8 @@ class _QuizPageState extends State<QuizPage> {
     if (_currentIndex > 0) {
       setState(() {
         _currentIndex--;
+        // Nếu quay lại, mặc định cho phép đi tiếp vì đã làm rồi
+        _canGoNext = true; 
       });
     }
   }
@@ -162,12 +174,25 @@ class _QuizPageState extends State<QuizPage> {
               ),
             ),
             
-            // Content Area (Flashcard)
+            // Content Area
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-                child: FlashcardWidget(question: currentQuestion),
+                child: currentQuestion.type == QuestionType.flashcard
+                    ? FlashcardWidget(
+                        key: ValueKey(currentQuestion.id),
+                        question: currentQuestion,
+                      )
+                    : MultipleChoiceWidget(
+                        key: ValueKey(currentQuestion.id),
+                        question: currentQuestion,
+                        onCorrectAnswer: () {
+                          setState(() {
+                            _canGoNext = true;
+                          });
+                        },
+                      ),
               ),
             ),
             
@@ -198,12 +223,13 @@ class _QuizPageState extends State<QuizPage> {
                   
                   const Spacer(),
                   
+                  // Nút Next hoặc Finish
                   ElevatedButton(
-                    onPressed: _nextQuestion,
+                    onPressed: _canGoNext ? _nextQuestion : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
+                      backgroundColor: _canGoNext ? AppColors.primaryBlue : AppColors.borderGrey,
                       foregroundColor: Colors.white,
-                      elevation: 0, // Flat design cho button này
+                      elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -213,7 +239,7 @@ class _QuizPageState extends State<QuizPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          _currentIndex == _totalQuestions - 1 ? 'Finish' : 'Next Word',
+                          _currentIndex == _totalQuestions - 1 ? 'Finish' : 'Next',
                           style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
                         ),
                         const SizedBox(width: 8),
