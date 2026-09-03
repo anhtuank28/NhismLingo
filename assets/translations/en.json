@@ -7,5 +7,12 @@
     "tag_real_speech": "Real Speech",
     "btn_get_started": "Get Started",
     "btn_already_have_account": "I already have an account"
+  },
+  "bottom_nav": {
+    "home": "Home",
+    "courses": "Courses",
+    "lessons": "Lessons",
+    "quiz": "Quiz",
+    "profile": "Profile"
   }
 }

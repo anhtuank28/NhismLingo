@@ -39,6 +39,7 @@ dependencies:
   flutter_riverpod: ^2.5.1
   go_router: ^14.2.0
   easy_localization: ^3.0.5
+  rive: ^0.13.0
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +67,7 @@ flutter:
   assets:
     - assets/images/
     - assets/translations/
+    - assets/rive/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

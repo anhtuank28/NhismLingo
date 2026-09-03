@@ -7,5 +7,12 @@
     "tag_real_speech": "Giao tiếp Thực",
     "btn_get_started": "Bắt đầu ngay",
     "btn_already_have_account": "Tôi đã có tài khoản"
+  },
+  "bottom_nav": {
+    "home": "Trang chủ",
+    "courses": "Khóa học",
+    "lessons": "Bài học",
+    "quiz": "Luyện tập",
+    "profile": "Hồ sơ"
   }
 }
