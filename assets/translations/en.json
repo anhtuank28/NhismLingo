@@ -12,7 +12,22 @@
     "home": "Home",
     "courses": "Courses",
     "lessons": "Lessons",
-    "quiz": "Quiz",
+    "leaderboard": "Rank",
     "profile": "Profile"
+  },
+  "courses": {
+    "search_hint": "Search courses...",
+    "no_courses_found": "No courses found",
+    "lessons_count": "lessons",
+    "progress_label": "Your progress",
+    "btn_resume": "Resume learning",
+    "status_not_started": "Not started",
+    "btn_start_now": "Start now",
+    "categories": {
+      "all": "All",
+      "speaking": "Speaking",
+      "vocabulary": "Vocabulary",
+      "grammar": "Grammar"
+    }
   }
 }

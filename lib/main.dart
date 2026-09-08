@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/core/router/app_router.dart';
 import 'package:nhims_lingo/features/onboarding/presentation/pages/welcome_page.dart';
+import 'package:nhims_lingo/core/services/tts_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +15,9 @@ Future<void> main() async {
     url: 'https://lctujuziarczovyiuiod.supabase.co',
     anonKey: 'sb_publishable_Ph5YLHnaafdSz8oLMXCvZA_tYTWDAc1',
   );
+  
+  // Khởi tạo Text-to-Speech Engine
+  await TTSService.instance.init();
 
   runApp(
     EasyLocalization(

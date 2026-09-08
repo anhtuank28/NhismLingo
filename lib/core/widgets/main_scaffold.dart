@@ -63,9 +63,9 @@ class MainScaffold extends StatelessWidget {
               label: 'bottom_nav.lessons'.tr(),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.quiz_outlined),
-              activeIcon: const Icon(Icons.quiz),
-              label: 'bottom_nav.quiz'.tr(),
+              icon: const Icon(Icons.leaderboard_outlined),
+              activeIcon: const Icon(Icons.leaderboard),
+              label: 'bottom_nav.leaderboard'.tr(),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.person_outline),

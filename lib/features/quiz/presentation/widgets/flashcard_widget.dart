@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/features/quiz/domain/models/quiz_question_model.dart';
+import 'package:nhims_lingo/core/services/tts_service.dart';
 
 class FlashcardWidget extends StatefulWidget {
   final QuizQuestionModel question;
@@ -168,7 +169,8 @@ class _FlashcardWidgetState extends State<FlashcardWidget> with SingleTickerProv
               child: IconButton(
                 icon: const Icon(Icons.volume_up_rounded, color: AppColors.primaryBlue),
                 onPressed: () {
-                  // TODO: Phát âm thanh
+                  // Gọi Singleton TTSService để phát âm từ vựng tiếng Anh
+                  TTSService.instance.speak(widget.question.word);
                 },
               ),
             ),

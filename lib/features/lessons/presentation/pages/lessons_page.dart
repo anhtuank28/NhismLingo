@@ -5,7 +5,7 @@ import 'package:nhims_lingo/features/lessons/presentation/widgets/lesson_node_wi
 import 'package:nhims_lingo/features/lessons/domain/models/lesson_model.dart';
 import 'package:nhims_lingo/features/lessons/presentation/widgets/seamless_path_painter.dart';
 import 'package:nhims_lingo/features/lessons/presentation/widgets/map_environment_painter.dart';
-import 'package:nhims_lingo/features/quiz/presentation/pages/quiz_page.dart';
+import 'package:nhims_lingo/features/quiz/presentation/pages/leaderboard_page.dart';
 
 class LessonsPage extends StatelessWidget {
   const LessonsPage({super.key});
@@ -137,7 +137,7 @@ class LessonsPage extends StatelessWidget {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => QuizPage(lessonTitle: lesson.title),
+                                            builder: (context) => LeaderboardPage(lessonTitle: lesson.title),
                                           ),
                                         );
                                       },

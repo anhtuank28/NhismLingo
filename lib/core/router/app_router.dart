@@ -7,7 +7,7 @@ import 'package:nhims_lingo/features/onboarding/presentation/pages/welcome_page.
 import 'package:nhims_lingo/features/home/presentation/pages/home_page.dart';
 import 'package:nhims_lingo/features/courses/presentation/pages/courses_page.dart';
 import 'package:nhims_lingo/features/lessons/presentation/pages/lessons_page.dart';
-import 'package:nhims_lingo/features/quiz/presentation/pages/quiz_page.dart';
+import 'package:nhims_lingo/features/quiz/presentation/pages/leaderboard_page.dart';
 import 'package:nhims_lingo/features/profile/presentation/pages/profile_page.dart';
 
 // Chìa khóa (Key) để quản lý Navigator gốc của toàn bộ ứng dụng
@@ -64,7 +64,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/quiz',
-                builder: (context, state) => const QuizPage(lessonTitle: 'Ôn tập nhanh'),
+                builder: (context, state) => const LeaderboardPage(lessonTitle: 'Ôn tập nhanh'),
               ),
             ],
           ),

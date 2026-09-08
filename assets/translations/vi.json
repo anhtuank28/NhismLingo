@@ -12,7 +12,22 @@
     "home": "Trang chủ",
     "courses": "Khóa học",
     "lessons": "Bài học",
-    "quiz": "Luyện tập",
+    "leaderboard": "Bảng xếp hạng",
     "profile": "Hồ sơ"
+  },
+  "courses": {
+    "search_hint": "Tìm kiếm khóa học...",
+    "no_courses_found": "Không tìm thấy khóa học nào",
+    "lessons_count": "bài học",
+    "progress_label": "Tiến độ của bạn",
+    "btn_resume": "Tiếp tục học",
+    "status_not_started": "Chưa bắt đầu",
+    "btn_start_now": "Bắt đầu ngay",
+    "categories": {
+      "all": "Tất cả",
+      "speaking": "Giao tiếp",
+      "vocabulary": "Từ vựng",
+      "grammar": "Ngữ pháp"
+    }
   }
 }
