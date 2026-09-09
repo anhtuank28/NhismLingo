@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/core/widgets/primary_button.dart';
 import 'package:nhims_lingo/features/onboarding/presentation/widgets/feature_tag.dart';
+import 'package:nhims_lingo/features/auth/presentation/providers/auth_provider.dart';
 
 class WelcomePage extends ConsumerWidget {
   const WelcomePage({super.key});
@@ -160,12 +161,14 @@ class WelcomePage extends ConsumerWidget {
                         PrimaryButton(
                           text: 'welcome.btn_get_started'.tr(),
                           onPressed: () {
-                            context.go('/home');
+                            context.go('/register'); // Chuyển sang trang Đăng ký
                           },
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.go('/login'); // Chuyển sang trang Đăng nhập
+                          },
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.primaryBlue,
                           ),
@@ -174,6 +177,24 @@ class WelcomePage extends ConsumerWidget {
                             style: GoogleFonts.nunito(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        // Nút học thử
+                        TextButton(
+                          onPressed: () {
+                            ref.read(authProvider.notifier).loginAsGuest();
+                            context.go('/home');
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.textSecondary,
+                          ),
+                          child: Text(
+                            'Bỏ qua, tôi muốn học thử',
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
                             ),
                           ),
                         ),
