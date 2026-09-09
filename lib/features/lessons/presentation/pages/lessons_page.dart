@@ -5,7 +5,6 @@ import 'package:nhims_lingo/features/lessons/presentation/widgets/lesson_node_wi
 import 'package:nhims_lingo/features/lessons/domain/models/lesson_model.dart';
 import 'package:nhims_lingo/features/lessons/presentation/widgets/seamless_path_painter.dart';
 import 'package:nhims_lingo/features/lessons/presentation/widgets/map_environment_painter.dart';
-import 'package:nhims_lingo/features/quiz/presentation/pages/leaderboard_page.dart';
 
 class LessonsPage extends StatelessWidget {
   const LessonsPage({super.key});
@@ -134,10 +133,13 @@ class LessonsPage extends StatelessWidget {
                                     ElevatedButton(
                                       onPressed: () {
                                         Navigator.pop(context); // Đóng popup
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => LeaderboardPage(lessonTitle: lesson.title),
+                                        // TODO: Sprint 2 - Chuyển sang QuizPage thật
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('🦔 Bài "${lesson.title}" đang được xây dựng! Quay lại sớm nhé~'),
+                                            backgroundColor: AppColors.primaryBlue,
+                                            behavior: SnackBarBehavior.floating,
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                           ),
                                         );
                                       },

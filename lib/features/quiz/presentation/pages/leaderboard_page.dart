@@ -1,20 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/features/quiz/data/mock_leaderboard_data.dart';
+import 'package:nhims_lingo/features/auth/presentation/providers/auth_provider.dart';
+import 'package:nhims_lingo/features/auth/domain/models/auth_state.dart';
+import 'package:nhims_lingo/features/auth/presentation/widgets/login_required_widget.dart';
 
-class LeaderboardPage extends StatefulWidget {
+class LeaderboardPage extends ConsumerStatefulWidget {
   final String? lessonTitle; // Dùng chung tham số cũ nếu có truyền từ Router
   const LeaderboardPage({super.key, this.lessonTitle});
 
   @override
-  State<LeaderboardPage> createState() => _LeaderboardPageState();
+  ConsumerState<LeaderboardPage> createState() => _LeaderboardPageState();
 }
 
-class _LeaderboardPageState extends State<LeaderboardPage> {
+class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
   int _selectedTab = 0; // 0: Tuần này, 1: Tháng này, 2: Mọi lúc
 
   @override
   Widget build(BuildContext context) {
+    // Kéo trạng thái đăng nhập
+    final authState = ref.watch(authProvider);
+
+    // Bức tường chặn Guest Mode
+    if (authState.status == AuthStatus.guest || authState.status == AuthStatus.unauthenticated) {
+      return const Scaffold(
+        backgroundColor: Color(0xFFF4F6FC),
+        body: LoginRequiredWidget(
+          title: 'Thi đua cùng bạn bè',
+          description: 'Đăng nhập ngay để tham gia Bảng xếp hạng, khoe thành tích và đua TOP cùng cộng đồng NhismLingo!',
+          icon: Icons.emoji_events_rounded,
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FC), // Màu nền hơi tím nhạt xám
       body: SafeArea(
