@@ -9,26 +9,89 @@ import 'package:nhims_lingo/features/courses/presentation/pages/courses_page.dar
 import 'package:nhims_lingo/features/lessons/presentation/pages/lessons_page.dart';
 import 'package:nhims_lingo/features/quiz/presentation/pages/leaderboard_page.dart';
 import 'package:nhims_lingo/features/profile/presentation/pages/profile_page.dart';
+import 'package:nhims_lingo/features/auth/presentation/pages/login_page.dart';
+import 'package:nhims_lingo/features/auth/presentation/pages/register_page.dart';
+import 'package:nhims_lingo/features/auth/presentation/providers/auth_provider.dart';
+import 'package:nhims_lingo/features/auth/domain/models/auth_state.dart';
 
-// Chìa khóa (Key) để quản lý Navigator gốc của toàn bộ ứng dụng
+// Chìa khóa (Key) để quản lý Navigator gốc
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
-// Khởi tạo Trạm kiểm soát Điều hướng (Router Provider)
+/// Chuông báo thức (Listenable) cho GoRouter.
+/// Khi trạng thái Auth thay đổi, nó sẽ rung chuông để GoRouter chạy lại hàm redirect.
+class AuthChangeNotifier extends ChangeNotifier {
+  AuthChangeNotifier(Ref ref) {
+    ref.listen<AppAuthState>(authProvider, (_, __) {
+      notifyListeners(); // Rung chuông -> GoRouter chạy lại redirect
+    });
+  }
+}
+
+// Tạo chuông báo thức (chỉ tạo 1 lần duy nhất)
+final _authChangeNotifierProvider = Provider<AuthChangeNotifier>((ref) {
+  return AuthChangeNotifier(ref);
+});
+
+// Khởi tạo GoRouter (CHỈ TẠO 1 LẦN DUY NHẤT)
 final goRouterProvider = Provider<GoRouter>((ref) {
+  final notifier = ref.read(_authChangeNotifierProvider);
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/', // Vị trí xuất phát luôn là trang Welcome
+    initialLocation: '/',
+    refreshListenable: notifier, // Gắn chuông báo thức vào GoRouter
+    redirect: (context, state) {
+      // Mỗi khi chuông rung, hàm này chạy lại để kiểm tra quyền truy cập
+      final authState = ref.read(authProvider); // Dùng read() thay vì watch()!
+
+      final isAuth = authState.status == AuthStatus.authenticated;
+      final isGuest = authState.status == AuthStatus.guest;
+      final isUnauth = authState.status == AuthStatus.unauthenticated;
+
+      final currentPath = state.uri.path;
+      final isGoingToAuthScreen = currentPath == '/' ||
+          currentPath == '/login' ||
+          currentPath == '/register';
+
+      // Nếu chưa có trạng thái rõ ràng (đang check hoặc đang loading), đứng im
+      if (authState.status == AuthStatus.initial || authState.status == AuthStatus.loading) return null;
+
+      // Đã Đăng nhập mà đang ở Welcome/Login/Register -> Đá vào Home
+      if (isAuth && isGoingToAuthScreen) {
+        return '/home';
+      }
+
+      // Là Khách mà đang ở Welcome -> Đá vào Home
+      // CHO PHÉP Khách đi vào /login và /register
+      if (isGuest && currentPath == '/') {
+        return '/home';
+      }
+
+      // Chưa Đăng nhập và không phải Khách -> Đá ra Welcome
+      if (isUnauth && !isGoingToAuthScreen) {
+        return '/';
+      }
+
+      return null;
+    },
     routes: [
-      // Tuyến đường độc lập: Welcome (Không có thanh Bottom Bar)
+      // Welcome (Không có Bottom Bar)
       GoRoute(
         path: '/',
         builder: (context, state) => const WelcomePage(),
       ),
-      
-      // Tuyến đường có vỏ bọc (Shell Route) cho 5 Tab chính
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterPage(),
+      ),
+
+      // 5 Tab chính (có Bottom Bar)
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          // Trả về MainScaffold, nhồi 5 tab vào bên trong
           return MainScaffold(navigationShell: navigationShell);
         },
         branches: [
@@ -59,7 +122,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Nhánh 4: Luyện tập
+          // Nhánh 4: Bảng xếp hạng
           StatefulShellBranch(
             routes: [
               GoRoute(
