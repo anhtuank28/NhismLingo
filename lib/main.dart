@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/core/router/app_router.dart';
-import 'package:nhims_lingo/features/onboarding/presentation/pages/welcome_page.dart';
 import 'package:nhims_lingo/core/services/tts_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
+  // Load biến môi trường từ file .env
+  await dotenv.load(fileName: '.env');
+
   await Supabase.initialize(
-    url: 'https://lctujuziarczovyiuiod.supabase.co',
-    anonKey: 'sb_publishable_Ph5YLHnaafdSz8oLMXCvZA_tYTWDAc1',
+    url: dotenv.env['SUPABASE_URL']!,
+    publishableKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
   
   // Khởi tạo Text-to-Speech Engine
