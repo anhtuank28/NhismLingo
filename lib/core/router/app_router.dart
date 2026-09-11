@@ -8,6 +8,8 @@ import 'package:nhims_lingo/features/home/presentation/pages/home_page.dart';
 import 'package:nhims_lingo/features/courses/presentation/pages/courses_page.dart';
 import 'package:nhims_lingo/features/lessons/presentation/pages/lessons_page.dart';
 import 'package:nhims_lingo/features/quiz/presentation/pages/leaderboard_page.dart';
+import 'package:nhims_lingo/features/quiz/presentation/pages/quiz_page.dart';
+import 'package:nhims_lingo/features/quiz/presentation/pages/quiz_result_page.dart';
 import 'package:nhims_lingo/features/profile/presentation/pages/profile_page.dart';
 import 'package:nhims_lingo/features/auth/presentation/pages/login_page.dart';
 import 'package:nhims_lingo/features/auth/presentation/pages/register_page.dart';
@@ -89,6 +91,43 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterPage(),
       ),
 
+      // ===== Routes Standalone (KHÔNG có Bottom Bar) =====
+      
+      // Bản đồ bài học theo khóa (từ Courses bấm vào)
+      GoRoute(
+        path: '/lessons/:courseId',
+        builder: (context, state) {
+          final courseId = state.pathParameters['courseId']!;
+          return LessonsPage(courseId: courseId);
+        },
+      ),
+
+      // Quiz (làm bài)
+      GoRoute(
+        path: '/quiz/:lessonId',
+        builder: (context, state) {
+          final lessonId = state.pathParameters['lessonId']!;
+          final courseId = state.uri.queryParameters['courseId'] ?? '';
+          return QuizPage(lessonId: lessonId, courseId: courseId);
+        },
+      ),
+
+      // Kết quả Quiz
+      GoRoute(
+        path: '/quiz-result',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return QuizResultPage(
+            score: extra['score'] as int? ?? 0,
+            totalQuestions: extra['totalQuestions'] as int? ?? 0,
+            xpEarned: extra['xpEarned'] as int? ?? 0,
+            courseId: extra['courseId'] as String? ?? '',
+            lessonId: extra['lessonId'] as String? ?? '',
+            lessonTitle: extra['lessonTitle'] as String? ?? '',
+          );
+        },
+      ),
+
       // 5 Tab chính (có Bottom Bar)
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -113,7 +152,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Nhánh 3: Bài học
+          // Nhánh 3: Bài học (mặc định - hiển thị tất cả hoặc khóa đầu tiên)
           StatefulShellBranch(
             routes: [
               GoRoute(

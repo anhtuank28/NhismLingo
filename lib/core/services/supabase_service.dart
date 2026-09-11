@@ -67,7 +67,7 @@ class SupabaseService {
         .from('courses')
         .select()
         .eq('is_published', true)
-        .order('display_order');
+        .order('display_order', ascending: true);
 
     return List<Map<String, dynamic>>.from(response);
   }
@@ -79,7 +79,7 @@ class SupabaseService {
         .select()
         .eq('is_published', true)
         .eq('category', category)
-        .order('display_order');
+        .order('display_order', ascending: true);
 
     return List<Map<String, dynamic>>.from(response);
   }
@@ -94,7 +94,7 @@ class SupabaseService {
         .from('lessons')
         .select()
         .eq('course_id', courseId)
-        .order('lesson_order');
+        .order('lesson_order', ascending: true);
 
     return List<Map<String, dynamic>>.from(response);
   }
@@ -158,13 +158,19 @@ class SupabaseService {
       // Tính streak
       int newStreak = currentStreak;
       final today = DateTime.now().toIso8601String().substring(0, 10);
-      if (lastActive != null && lastActive != today) {
+      if (lastActive == null) {
+        newStreak = 1; // Học bài đầu tiên từ lúc tạo tài khoản
+      } else if (lastActive != today) {
         final lastDate = DateTime.parse(lastActive);
-        final diff = DateTime.now().difference(lastDate).inDays;
+        // Reset thời gian về 00:00:00 để so sánh số ngày chênh lệch chuẩn xác
+        final lastDateOnly = DateTime(lastDate.year, lastDate.month, lastDate.day);
+        final todayOnly = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+        final diff = todayOnly.difference(lastDateOnly).inDays;
+        
         if (diff == 1) {
           newStreak = currentStreak + 1; // Liên tiếp
         } else if (diff > 1) {
-          newStreak = 1; // Reset streak
+          newStreak = 1; // Reset streak vì bỏ lỡ ngày
         }
       }
 
