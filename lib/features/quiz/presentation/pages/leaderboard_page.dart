@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
-import 'package:nhims_lingo/features/quiz/data/mock_leaderboard_data.dart';
+import 'package:nhims_lingo/features/quiz/domain/models/leaderboard_user_model.dart';
+import 'package:nhims_lingo/features/quiz/presentation/providers/leaderboard_provider.dart';
 import 'package:nhims_lingo/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nhims_lingo/features/auth/domain/models/auth_state.dart';
 import 'package:nhims_lingo/features/auth/presentation/widgets/login_required_widget.dart';
@@ -34,6 +35,8 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
       );
     }
 
+    final leaderboardAsync = ref.watch(leaderboardProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FC), // Màu nền hơi tím nhạt xám
       body: SafeArea(
@@ -44,35 +47,45 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
             
             // Nội dung cuộn
             Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 16),
-                    
-                    // 2. Bục vinh quang Top 3
-                    _buildPodium(),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // 3. Vị trí hiện tại
-                    _buildCurrentUserStatus(),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // 4. Danh sách xếp hạng
-                    _buildLeaderboardList(),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // 5. Khung Mời bạn bè (Chuyển xuống dưới cùng, không ghim)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: _buildInviteSection(),
+              child: leaderboardAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(child: Text('Lỗi: $error')),
+                data: (users) {
+                  if (users.isEmpty) {
+                    return const Center(child: Text('Chưa có dữ liệu bảng xếp hạng.'));
+                  }
+                  
+                  return SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        
+                        // 2. Bục vinh quang Top 3
+                        _buildPodium(users),
+                        
+                        const SizedBox(height: 16),
+                        
+                        // 3. Vị trí hiện tại
+                        _buildCurrentUserStatus(users),
+                        
+                        const SizedBox(height: 24),
+                        
+                        // 4. Danh sách xếp hạng
+                        _buildLeaderboardList(users),
+                        
+                        const SizedBox(height: 24),
+                        
+                        // 5. Khung Mời bạn bè (Chuyển xuống dưới cùng, không ghim)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: _buildInviteSection(),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
                     ),
-                    const SizedBox(height: 32),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],
@@ -137,10 +150,10 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
     );
   }
 
-  Widget _buildPodium() {
-    final top1 = mockLeaderboardUsers.firstWhere((u) => u.rank == 1);
-    final top2 = mockLeaderboardUsers.firstWhere((u) => u.rank == 2);
-    final top3 = mockLeaderboardUsers.firstWhere((u) => u.rank == 3);
+  Widget _buildPodium(List<LeaderboardUser> users) {
+    final top1 = users.isNotEmpty ? users[0] : null;
+    final top2 = users.length > 1 ? users[1] : null;
+    final top3 = users.length > 2 ? users[2] : null;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -155,11 +168,11 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           // TOP 2
-          _buildPodiumItem(top2, 100, const Color(0xFFF0F0F0), false),
+          if (top2 != null) _buildPodiumItem(top2, 100, const Color(0xFFF0F0F0), false),
           // TOP 1
-          _buildPodiumItem(top1, 140, const Color(0xFFD3DFFF), true),
+          if (top1 != null) _buildPodiumItem(top1, 140, const Color(0xFFD3DFFF), true),
           // TOP 3
-          _buildPodiumItem(top3, 90, const Color(0xFFF0F0F0), false),
+          if (top3 != null) _buildPodiumItem(top3, 90, const Color(0xFFF0F0F0), false),
         ],
       ),
     );
@@ -187,8 +200,13 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: isTop1 ? const Color(0xFFFF9800) : Colors.transparent, width: 3),
+                color: const Color(0xFFEEEEEE),
                 image: DecorationImage(
-                  image: NetworkImage(user.avatarUrl),
+                  image: NetworkImage(
+                    user.avatarUrl.isNotEmpty 
+                        ? user.avatarUrl 
+                        : 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(user.name)}&background=random',
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -226,10 +244,6 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
           '${user.xp} XP',
           style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.primaryBlue, fontSize: 12),
         ),
-        Text(
-          '${user.lessons} bài',
-          style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.green, fontSize: 10),
-        ),
         const SizedBox(height: 8),
         
         // Khối bục (Block)
@@ -257,7 +271,23 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
     );
   }
 
-  Widget _buildCurrentUserStatus() {
+  Widget _buildCurrentUserStatus(List<LeaderboardUser> users) {
+    // Tìm user hiện tại bằng cách so sánh ID
+    final authState = ref.watch(authProvider);
+    final currentUserId = authState.user?.id;
+    
+    LeaderboardUser? currentUser;
+    if (currentUserId != null) {
+      try {
+        currentUser = users.firstWhere((u) => u.id == currentUserId);
+      } catch (e) {
+        currentUser = null;
+      }
+    }
+    
+    final rank = currentUser?.rank ?? 0;
+    final xp = currentUser?.xp ?? 0;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
@@ -276,9 +306,9 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: const Text(
-              '1',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            child: Text(
+              '$rank',
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ),
           const SizedBox(width: 12),
@@ -290,9 +320,9 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
               children: [
                 Row(
                   children: [
-                    const Text(
-                      'Vị trí của bạn: #1',
-                      style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF004D1E), fontSize: 14),
+                    Text(
+                      'Vị trí của bạn: #$rank',
+                      style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF004D1E), fontSize: 14),
                     ),
                     const SizedBox(width: 8),
                     Container(
@@ -302,16 +332,16 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Text(
-                        'Giữ hạng',
+                        'Đang đua top',
                         style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF004D1E), fontSize: 10),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  '42 thử thách vượt qua • Hơn bạn bè...',
-                  style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF004D1E), fontSize: 12),
+                Text(
+                  '$xp Điểm kinh nghiệm (XP)',
+                  style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF004D1E), fontSize: 12),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -333,8 +363,9 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
     );
   }
 
-  Widget _buildLeaderboardList() {
-    final listUsers = mockLeaderboardUsers.where((u) => u.rank > 3).toList();
+  Widget _buildLeaderboardList(List<LeaderboardUser> users) {
+    // Chỉ lấy từ top 4 trở đi
+    final listUsers = users.where((u) => u.rank > 3).toList();
     
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -352,19 +383,35 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Bảng xếp hạng theo bài học',
+                'Bảng xếp hạng toàn cầu',
                 style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.textPrimary),
               ),
               Text(
-                '18 bạn bè tham gia',
+                '${users.length} người tham gia',
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12, color: Colors.grey.shade600),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          
           // List Items
-          ...listUsers.map((user) => _buildListItem(user)),
+          if (listUsers.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(
+                child: Text(
+                  'Chưa có người chơi nào ngoài Top 3.\nHãy rủ thêm bạn bè cùng tham gia đua top nhé!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            )
+          else
+            ...listUsers.map((user) => _buildListItem(user)),
         ],
       ),
     );
@@ -401,28 +448,21 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
             ),
           ),
           
-          // Avatar + Streak
+          // Avatar
           Stack(
             clipBehavior: Clip.none,
             alignment: Alignment.bottomRight,
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage: NetworkImage(user.avatarUrl),
-              ),
-              if (user.streakDays != null && user.streakDays! > 0)
-                Positioned(
-                  bottom: -4,
-                  right: -4,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.local_fire_department_rounded, color: Colors.orange, size: 14),
-                  ),
+                backgroundImage: NetworkImage(
+                  user.avatarUrl.isNotEmpty 
+                      ? user.avatarUrl 
+                      : 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(user.name)}&background=random',
                 ),
+                onBackgroundImageError: (_, __) {},
+                backgroundColor: AppColors.borderGrey,
+              ),
             ],
           ),
           const SizedBox(width: 12),
@@ -439,17 +479,16 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
                       style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.textPrimary),
                     ),
                     const SizedBox(width: 6),
-                    if (user.streakDays != null)
-                      Text(
-                        '${user.streakDays} ngày streak',
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10, color: Colors.grey.shade500),
-                      ),
+                    Text(
+                      'Level ${user.level}',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10, color: Colors.grey.shade500),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${user.lessons} bài • ${user.subtitle}',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 11, color: Colors.grey.shade600),
+                  '${user.xp} Điểm kinh nghiệm (XP)',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11, color: AppColors.primaryBlue),
                 ),
               ],
             ),
