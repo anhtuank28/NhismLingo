@@ -29,5 +29,24 @@
       "vocabulary": "Từ vựng",
       "grammar": "Ngữ pháp"
     }
+  },
+  "quiz": {
+    "loading": "Đang tải bài học...",
+    "exit_title": "Thoát bài học?",
+    "exit_message": "Tiến trình bài học sẽ không được lưu lại.",
+    "btn_stay": "Ở LẠI",
+    "btn_leave": "THOÁT",
+    "btn_continue": "TIẾP TỤC",
+    "btn_understood": "ĐÃ HIỂU, TIẾP TỤC",
+    "btn_view_result": "XEM KẾT QUẢ"
+  },
+  "quiz_result": {
+    "title_perfect": "Hoàn hảo!",
+    "title_great": "Xuất sắc!",
+    "title_good": "Tốt lắm!",
+    "title_try_harder": "Cố gắng thêm!",
+    "correct_count": "câu đúng",
+    "btn_continue": "TIẾP TỤC",
+    "btn_retry": "HỌC LẠI"
   }
 }

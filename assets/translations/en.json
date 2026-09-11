@@ -29,5 +29,24 @@
       "vocabulary": "Vocabulary",
       "grammar": "Grammar"
     }
+  },
+  "quiz": {
+    "loading": "Loading lesson...",
+    "exit_title": "Leave lesson?",
+    "exit_message": "Your progress in this lesson won't be saved.",
+    "btn_stay": "STAY",
+    "btn_leave": "LEAVE",
+    "btn_continue": "CONTINUE",
+    "btn_understood": "GOT IT, CONTINUE",
+    "btn_view_result": "VIEW RESULT"
+  },
+  "quiz_result": {
+    "title_perfect": "Perfect!",
+    "title_great": "Excellent!",
+    "title_good": "Good job!",
+    "title_try_harder": "Keep trying!",
+    "correct_count": "correct answers",
+    "btn_continue": "CONTINUE",
+    "btn_retry": "TRY AGAIN"
   }
 }
