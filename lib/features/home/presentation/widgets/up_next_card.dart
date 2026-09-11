@@ -151,7 +151,7 @@ class UpNextCard extends StatelessWidget {
               // Continue Button
               ElevatedButton.icon(
                 onPressed: () {
-                  context.go('/lessons');
+                  context.push('/lessons/mock_course_id_here'); // Tạm thời dùng mock_course_id
                 },
                 icon: const Icon(Icons.play_arrow_rounded, size: 16),
                 label: const Text('Continue'),
