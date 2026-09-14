@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rive/rive.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 
 class QuizResultPage extends StatefulWidget {
@@ -96,9 +97,13 @@ class _QuizResultPageState extends State<QuizResultPage> with TickerProviderStat
               const Spacer(flex: 1),
 
               // ===== EMOJI + TIÊU ĐỀ =====
-              Text(
-                isPerfect ? '🎉' : isGreat ? '🌟' : isGood ? '👍' : '💪',
-                style: const TextStyle(fontSize: 64),
+              SizedBox(
+                height: 120,
+                width: 120,
+                child: const RiveAnimation.asset(
+                  'assets/rive/hedgehog.riv',
+                  fit: BoxFit.contain,
+                ),
               ),
               const SizedBox(height: 16),
               Text(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart' hide Animation;
-import 'package:nhims_lingo/core/theme/app_colors.dart';
+import 'package:rive/rive.dart';
 import 'package:nhims_lingo/features/lessons/domain/models/lesson_model.dart';
 
 class LessonNodeWidget extends StatelessWidget {
