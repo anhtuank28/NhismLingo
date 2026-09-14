@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
+import 'package:nhims_lingo/core/widgets/skeleton_loading.dart';
 import 'package:nhims_lingo/core/widgets/gamification_app_bar.dart';
 import 'package:nhims_lingo/features/lessons/data/lessons_provider.dart';
 import 'package:nhims_lingo/features/lessons/domain/models/lesson_model.dart';
@@ -42,9 +43,7 @@ class LessonsPage extends ConsumerWidget {
         showBackButton: true,
       ),
       body: lessonsAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.primaryBlue),
-        ),
+        loading: () => _buildSkeletonLoading(context),
         error: (err, _) => _buildErrorState(context, ref, err.toString()),
         data: (lessons) {
           if (lessons.isEmpty) {
@@ -294,6 +293,22 @@ class LessonsPage extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSkeletonLoading(BuildContext context) {
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 6,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+          child: Align(
+            alignment: Alignment(getAlignmentX(index), 0),
+            child: const SkeletonLoading(width: 80, height: 80, borderRadius: 40),
+          ),
+        );
+      },
     );
   }
 }

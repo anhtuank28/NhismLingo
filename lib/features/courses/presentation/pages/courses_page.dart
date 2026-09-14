@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/core/widgets/gamification_app_bar.dart';
+import 'package:nhims_lingo/core/widgets/skeleton_loading.dart';
 import 'package:nhims_lingo/features/courses/data/courses_provider.dart';
 import 'package:nhims_lingo/features/courses/domain/models/course_model.dart';
 import 'package:nhims_lingo/features/courses/presentation/widgets/course_list_item.dart';
@@ -182,24 +183,19 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Shimmer ảnh
-              Container(
+              const SkeletonLoading(
+                width: double.infinity,
                 height: 140,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0F0F0),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                  ),
-                ),
+                borderRadius: 15,
               ),
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(width: 180, height: 14, decoration: BoxDecoration(color: const Color(0xFFF0F0F0), borderRadius: BorderRadius.circular(4))),
-                    const SizedBox(height: 12),
-                    Container(width: 120, height: 12, decoration: BoxDecoration(color: const Color(0xFFF0F0F0), borderRadius: BorderRadius.circular(4))),
+                  children: const [
+                    SkeletonLoading(width: 180, height: 14, borderRadius: 4),
+                    SizedBox(height: 12),
+                    SkeletonLoading(width: 120, height: 12, borderRadius: 4),
                   ],
                 ),
               ),

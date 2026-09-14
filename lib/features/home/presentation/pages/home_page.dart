@@ -9,6 +9,7 @@ import 'package:nhims_lingo/features/home/presentation/widgets/up_next_card.dart
 import 'package:nhims_lingo/features/home/presentation/widgets/animated_flame.dart';
 import 'package:nhims_lingo/features/home/presentation/widgets/home_background_painter.dart';
 import 'package:nhims_lingo/features/profile/presentation/providers/profile_provider.dart';
+import 'package:nhims_lingo/core/widgets/skeleton_loading.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -138,8 +139,37 @@ class HomePage extends ConsumerWidget {
   }
 
   Widget _buildHeader(AsyncValue<ProfileData?> profileAsync) {
-    // Lấy tên và streak thật, fallback về giá trị mặc định nếu chưa load xong
-    final profile = profileAsync.valueOrNull;
+    return profileAsync.when(
+      loading: () => Padding(
+        padding: const EdgeInsets.only(left: 24, right: 24, top: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'NhismLingo',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.5,
+              ),
+            ),
+            Row(
+              children: const [
+                SkeletonLoading(width: 60, height: 40, borderRadius: 20),
+                SizedBox(width: 12),
+                SkeletonLoading(width: 40, height: 40, borderRadius: 20),
+              ],
+            ),
+          ],
+        ),
+      ),
+      error: (e, s) => _buildHeaderContent(null),
+      data: (profile) => _buildHeaderContent(profile),
+    );
+  }
+
+  Widget _buildHeaderContent(ProfileData? profile) {
     final streakCount = profile?.streakDays ?? mockUserProfile.streak;
     final avatarUrl = (profile != null && profile.avatarUrl.isNotEmpty) 
         ? profile.avatarUrl 

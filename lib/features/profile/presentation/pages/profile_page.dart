@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
+import 'package:nhims_lingo/core/widgets/skeleton_loading.dart';
 import 'package:nhims_lingo/features/profile/presentation/providers/profile_provider.dart';
 import 'package:nhims_lingo/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nhims_lingo/features/auth/domain/models/auth_state.dart';
@@ -47,10 +48,7 @@ class ProfilePage extends ConsumerWidget {
         ],
       ),
       body: profileAsync.when(
-        // Đang tải
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.primaryBlue),
-        ),
+        loading: () => _buildSkeletonLoading(),
         // Lỗi
         error: (error, stack) => Center(
           child: Column(
@@ -448,6 +446,37 @@ class ProfilePage extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSkeletonLoading() {
+    return SafeArea(
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 16),
+            const SkeletonLoading(width: 100, height: 100, borderRadius: 50),
+            const SizedBox(height: 16),
+            const SkeletonLoading(width: 150, height: 24, borderRadius: 4),
+            const SizedBox(height: 8),
+            const SkeletonLoading(width: 80, height: 24, borderRadius: 12),
+            const SizedBox(height: 40),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Expanded(child: Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: SkeletonLoading(width: double.infinity, height: 100, borderRadius: 16))),
+                  Expanded(child: Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: SkeletonLoading(width: double.infinity, height: 100, borderRadius: 16))),
+                  Expanded(child: Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: SkeletonLoading(width: double.infinity, height: 100, borderRadius: 16))),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
