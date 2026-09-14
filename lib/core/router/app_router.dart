@@ -19,6 +19,32 @@ import 'package:nhims_lingo/features/auth/domain/models/auth_state.dart';
 // Chìa khóa (Key) để quản lý Navigator gốc
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
+Page<dynamic> _fadeTransition(BuildContext context, GoRouterState state, Widget child) {
+  return CustomTransitionPage(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(opacity: animation, child: child);
+    },
+  );
+}
+
+Page<dynamic> _slideTransition(BuildContext context, GoRouterState state, Widget child) {
+  return CustomTransitionPage(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(1.0, 0.0),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      );
+    },
+  );
+}
+
 /// Chuông báo thức (Listenable) cho GoRouter.
 /// Khi trạng thái Auth thay đổi, nó sẽ rung chuông để GoRouter chạy lại hàm redirect.
 class AuthChangeNotifier extends ChangeNotifier {
@@ -80,15 +106,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       // Welcome (Không có Bottom Bar)
       GoRoute(
         path: '/',
-        builder: (context, state) => const WelcomePage(),
+        pageBuilder: (context, state) => _fadeTransition(context, state, const WelcomePage()),
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const LoginPage(),
+        pageBuilder: (context, state) => _fadeTransition(context, state, const LoginPage()),
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) => const RegisterPage(),
+        pageBuilder: (context, state) => _fadeTransition(context, state, const RegisterPage()),
       ),
 
       // ===== Routes Standalone (KHÔNG có Bottom Bar) =====
@@ -96,35 +122,35 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       // Bản đồ bài học theo khóa (từ Courses bấm vào)
       GoRoute(
         path: '/lessons/:courseId',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final courseId = state.pathParameters['courseId']!;
-          return LessonsPage(courseId: courseId);
+          return _slideTransition(context, state, LessonsPage(courseId: courseId));
         },
       ),
 
       // Quiz (làm bài)
       GoRoute(
         path: '/quiz/:lessonId',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final lessonId = state.pathParameters['lessonId']!;
           final courseId = state.uri.queryParameters['courseId'] ?? '';
-          return QuizPage(lessonId: lessonId, courseId: courseId);
+          return _slideTransition(context, state, QuizPage(lessonId: lessonId, courseId: courseId));
         },
       ),
 
       // Kết quả Quiz
       GoRoute(
         path: '/quiz-result',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final extra = state.extra as Map<String, dynamic>? ?? {};
-          return QuizResultPage(
+          return _fadeTransition(context, state, QuizResultPage(
             score: extra['score'] as int? ?? 0,
             totalQuestions: extra['totalQuestions'] as int? ?? 0,
             xpEarned: extra['xpEarned'] as int? ?? 0,
             courseId: extra['courseId'] as String? ?? '',
             lessonId: extra['lessonId'] as String? ?? '',
             lessonTitle: extra['lessonTitle'] as String? ?? '',
-          );
+          ));
         },
       ),
 
