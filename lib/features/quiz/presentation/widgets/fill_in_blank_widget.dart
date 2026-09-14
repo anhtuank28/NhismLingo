@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/features/quiz/domain/models/quiz_question_model.dart';
+import 'package:flutter/services.dart';
+import 'package:nhims_lingo/core/services/audio_service.dart';
 
 class FillInBlankWidget extends StatefulWidget {
   final QuizQuestionModel question;
@@ -38,7 +40,12 @@ class _FillInBlankWidgetState extends State<FillInBlankWidget> {
       setState(() {
         _hasAnsweredCorrectly = true;
       });
+      AudioService.instance.playCorrectSound();
+      HapticFeedback.lightImpact();
       widget.onCorrectAnswer();
+    } else {
+      AudioService.instance.playWrongSound();
+      HapticFeedback.heavyImpact();
     }
   }
 

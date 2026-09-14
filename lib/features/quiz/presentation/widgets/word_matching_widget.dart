@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/features/quiz/domain/models/quiz_question_model.dart';
+import 'package:flutter/services.dart';
+import 'package:nhims_lingo/core/services/audio_service.dart';
 
 class WordMatchingWidget extends StatefulWidget {
   final QuizQuestionModel question;
@@ -72,6 +74,8 @@ class _WordMatchingWidgetState extends State<WordMatchingWidget> {
           _matchedItems.add(secondItem);
           _selectedItem = null;
         });
+        AudioService.instance.playCorrectSound();
+        HapticFeedback.lightImpact();
 
         // Kiểm tra chiến thắng
         if (_matchedItems.length == _shuffledItems.length) {
@@ -79,7 +83,8 @@ class _WordMatchingWidgetState extends State<WordMatchingWidget> {
         }
       } else {
         // Sai -> Tạm thời gán để hiện màu đỏ, sau 500ms bỏ chọn
-        // TODO: Hiệu ứng rung hoặc màu đỏ (hiện tại tạm thời clear _selectedItem luôn)
+        AudioService.instance.playWrongSound();
+        HapticFeedback.heavyImpact();
         setState(() {
           _selectedItem = null;
         });

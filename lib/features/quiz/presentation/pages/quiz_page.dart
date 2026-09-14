@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/core/services/supabase_service.dart';
+import 'package:nhims_lingo/core/services/audio_service.dart';
 import 'package:nhims_lingo/features/quiz/domain/models/quiz_question_model.dart';
 import 'package:nhims_lingo/features/quiz/presentation/widgets/flashcard_widget.dart';
 import 'package:nhims_lingo/features/quiz/presentation/widgets/multiple_choice_widget.dart';
@@ -191,6 +193,9 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       ref.invalidate(lessonsProvider(widget.courseId));
       ref.invalidate(coursesProvider);
     } catch (_) {}
+
+    AudioService.instance.playVictorySound();
+    HapticFeedback.heavyImpact();
 
     if (mounted) {
       context.pushReplacement('/quiz-result', extra: {

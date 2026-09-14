@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/features/quiz/domain/models/quiz_question_model.dart';
-
+import 'package:nhims_lingo/core/services/audio_service.dart';
 class MultipleChoiceWidget extends StatefulWidget {
   final QuizQuestionModel question;
   final VoidCallback onCorrectAnswer;
@@ -40,8 +41,13 @@ class _MultipleChoiceWidgetState extends State<MultipleChoiceWidget> {
       setState(() {
         _hasAnsweredCorrectly = true;
       });
+      AudioService.instance.playCorrectSound();
+      HapticFeedback.lightImpact();
       // Gọi callback để QuizPage hiển thị nút Next
       widget.onCorrectAnswer();
+    } else {
+      AudioService.instance.playWrongSound();
+      HapticFeedback.heavyImpact();
     }
   }
 
