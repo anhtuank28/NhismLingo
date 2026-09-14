@@ -42,6 +42,8 @@ dependencies:
   rive: ^0.13.0
   flutter_tts: ^4.2.5
   flutter_dotenv: ^6.0.1
+  audioplayers: ^6.8.1
+  shimmer: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +73,7 @@ flutter:
     - assets/images/
     - assets/translations/
     - assets/rive/
+    - assets/sounds/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
