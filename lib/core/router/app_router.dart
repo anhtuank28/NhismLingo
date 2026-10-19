@@ -49,7 +49,7 @@ Page<dynamic> _slideTransition(BuildContext context, GoRouterState state, Widget
 /// Khi trạng thái Auth thay đổi, nó sẽ rung chuông để GoRouter chạy lại hàm redirect.
 class AuthChangeNotifier extends ChangeNotifier {
   AuthChangeNotifier(Ref ref) {
-    ref.listen<AppAuthState>(authProvider, (_, __) {
+    ref.listen<AppAuthState>(authProvider, (_, _) {
       notifyListeners(); // Rung chuông -> GoRouter chạy lại redirect
     });
   }
@@ -191,7 +191,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/quiz',
+                path: '/leaderboard',
                 builder: (context, state) => const LeaderboardPage(lessonTitle: 'Ôn tập nhanh'),
               ),
             ],

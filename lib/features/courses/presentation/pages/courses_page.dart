@@ -18,6 +18,14 @@ class CoursesPage extends ConsumerStatefulWidget {
 
 class _CoursesPageState extends ConsumerState<CoursesPage> {
   String _selectedCategory = 'all';
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +55,32 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                   children: [
                     const Icon(Icons.search_rounded, color: Color(0xFF1460D9), size: 20),
                     const SizedBox(width: 12),
-                    Text(
-                      'courses.search_hint'.tr(),
-                      style: const TextStyle(
-                        color: Color(0xFF888888),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (val) => setState(() => _searchQuery = val.trim().toLowerCase()),
+                        style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                          border: InputBorder.none,
+                          hintText: 'courses.search_hint'.tr(),
+                          hintStyle: const TextStyle(
+                            color: Color(0xFF888888),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ),
                     ),
+                    if (_searchQuery.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        },
+                        child: const Icon(Icons.close_rounded, color: Color(0xFF888888), size: 18),
+                      ),
                   ],
                 ),
               ),
@@ -70,9 +96,17 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                 loading: () => _buildLoadingState(),
                 error: (err, _) => _buildErrorState(err.toString()),
                 data: (courses) {
-                  final filtered = _selectedCategory == 'all'
+                  final filteredByCategory = _selectedCategory == 'all'
                       ? courses
                       : courses.where((c) => c.category == _selectedCategory).toList();
+
+                  final filtered = _searchQuery.isEmpty
+                      ? filteredByCategory
+                      : filteredByCategory.where((c) {
+                          final title = c.title.toLowerCase();
+                          final desc = c.description.toLowerCase();
+                          return title.contains(_searchQuery) || desc.contains(_searchQuery);
+                        }).toList();
 
                   if (filtered.isEmpty) return _buildEmptyState();
 

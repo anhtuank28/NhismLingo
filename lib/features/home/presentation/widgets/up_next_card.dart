@@ -5,10 +5,14 @@ import 'package:nhims_lingo/features/home/data/mock_home_data.dart';
 
 class UpNextCard extends StatelessWidget {
   final UpNextLesson lesson;
+  final String? courseId;
+  final VoidCallback? onContinue;
 
   const UpNextCard({
     super.key,
     required this.lesson,
+    this.courseId,
+    this.onContinue,
   });
 
   @override
@@ -151,7 +155,13 @@ class UpNextCard extends StatelessWidget {
               // Continue Button
               ElevatedButton.icon(
                 onPressed: () {
-                  context.push('/lessons/mock_course_id_here'); // Tạm thời dùng mock_course_id
+                  if (onContinue != null) {
+                    onContinue!();
+                  } else if (courseId != null && courseId!.isNotEmpty) {
+                    context.push('/lessons/$courseId');
+                  } else {
+                    context.go('/courses');
+                  }
                 },
                 icon: const Icon(Icons.play_arrow_rounded, size: 16),
                 label: const Text('Continue'),

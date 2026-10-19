@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
+import 'package:nhims_lingo/features/courses/data/courses_provider.dart';
 import 'package:nhims_lingo/features/home/data/mock_home_data.dart';
 import 'package:nhims_lingo/features/home/presentation/widgets/course_card.dart';
 import 'package:nhims_lingo/features/home/presentation/widgets/daily_goal_card.dart';
@@ -18,6 +21,10 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Lấy profile thật từ Supabase (nếu đã đăng nhập)
     final profileAsync = ref.watch(profileDataProvider);
+    // Lấy danh sách khóa học thật từ Supabase
+    final coursesAsync = ref.watch(coursesProvider);
+    final activeCourses = coursesAsync.valueOrNull ?? [];
+    final firstCourseId = activeCourses.isNotEmpty ? activeCourses.first.id : null;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
@@ -46,9 +53,9 @@ class HomePage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // --- 1. Daily Goal ---
-                      const Text(
-                        'Daily Goal',
-                        style: TextStyle(
+                      Text(
+                        'home.daily_goal'.tr(),
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textSecondary,
@@ -59,41 +66,44 @@ class HomePage extends ConsumerWidget {
                       const SizedBox(height: 32),
                       
                       // --- 2. Up Next ---
-                      const Text(
-                        'Up Next',
-                        style: TextStyle(
+                      Text(
+                        'home.up_next'.tr(),
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const UpNextCard(lesson: mockUpNext),
+                      UpNextCard(
+                        lesson: mockUpNext,
+                        courseId: firstCourseId,
+                      ),
                       const SizedBox(height: 32),
                       
                       // --- 3. Recommended Courses Section ---
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'Recommended',
-                            style: TextStyle(
+                          Text(
+                            'home.recommended'.tr(),
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: AppColors.textSecondary,
                             ),
                           ),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () => context.go('/courses'),
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
                               minimumSize: const Size(50, 30),
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               alignment: Alignment.centerRight,
                             ),
-                            child: const Text(
-                              'See All',
-                              style: TextStyle(
+                            child: Text(
+                              'home.see_all'.tr(),
+                              style: const TextStyle(
                                 color: AppColors.primaryBlue,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -113,9 +123,20 @@ class HomePage extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     scrollDirection: Axis.horizontal,
                     physics: const BouncingScrollPhysics(),
-                    itemCount: mockRecommendedCourses.length,
+                    itemCount: activeCourses.isNotEmpty ? activeCourses.length : mockRecommendedCourses.length,
                     itemBuilder: (context, index) {
-                      return CourseCard(course: mockRecommendedCourses[index]);
+                      if (activeCourses.isNotEmpty) {
+                        final course = activeCourses[index];
+                        return CourseCard(
+                          courseModel: course,
+                          onTap: () => context.push('/lessons/${course.id}'),
+                        );
+                      } else {
+                        return CourseCard(
+                          course: mockRecommendedCourses[index],
+                          onTap: () => context.go('/courses'),
+                        );
+                      }
                     },
                   ),
                 ),
@@ -123,9 +144,18 @@ class HomePage extends ConsumerWidget {
                 const SizedBox(height: 32),
                 
                 // --- 4. Quick Actions ---
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.0),
-                  child: QuickActionButtons(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: QuickActionButtons(
+                    onVocabTap: () {
+                      if (firstCourseId != null) {
+                        context.push('/lessons/$firstCourseId');
+                      } else {
+                        context.go('/courses');
+                      }
+                    },
+                    onSpeakingTap: () => context.go('/courses'),
+                  ),
                 ),
                 
                 const SizedBox(height: 40),
@@ -213,7 +243,7 @@ class HomePage extends ConsumerWidget {
                         child: Image.network(
                           avatarUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Center(
+                          errorBuilder: (_, _, _) => Center(
                             child: Text(
                               initial,
                               style: const TextStyle(

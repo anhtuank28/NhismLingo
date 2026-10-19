@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 
 
 class QuickActionButtons extends StatelessWidget {
-  const QuickActionButtons({super.key});
+  final VoidCallback? onVocabTap;
+  final VoidCallback? onSpeakingTap;
+
+  const QuickActionButtons({
+    super.key,
+    this.onVocabTap,
+    this.onSpeakingTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +23,7 @@ class QuickActionButtons extends StatelessWidget {
             backgroundColor: const Color(0xFFE9F2FF), // Nhạt hơn xíu cho đẹp
             iconBgColor: const Color(0xFFC7E0FF),
             iconColor: const Color(0xFF1CB0F6),
+            onTap: onVocabTap,
           ),
         ),
         const SizedBox(width: 16),
@@ -27,6 +35,7 @@ class QuickActionButtons extends StatelessWidget {
             backgroundColor: const Color(0xFFEAF5EB), // Nhạt hơn xíu
             iconBgColor: const Color(0xFFCBE8CC),
             iconColor: const Color(0xFF2EA836), // Xanh lá tươi hơn
+            onTap: onSpeakingTap,
           ),
         ),
       ],
@@ -40,14 +49,20 @@ class QuickActionButtons extends StatelessWidget {
     required Color backgroundColor,
     required Color iconBgColor,
     required Color iconColor,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: backgroundColor,
+    return Material(
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.05), width: 1),
-      ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.black.withValues(alpha: 0.05), width: 1),
+          ),
       child: Row(
         children: [
           Container(
@@ -91,6 +106,8 @@ class QuickActionButtons extends StatelessWidget {
           )
         ],
       ),
+    ),
+    ),
     );
   }
 }
