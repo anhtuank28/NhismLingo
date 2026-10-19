@@ -128,7 +128,7 @@ class SupabaseService {
     return List<Map<String, dynamic>>.from(response);
   }
 
-  /// Đánh dấu hoàn thành 1 bài học + cộng XP
+  /// Đánh dấu hoàn thành 1 bài học + cộng XP qua Stored Procedure (RPC) an toàn
   Future<void> completeLesson({
     required String courseId,
     required String lessonId,
@@ -138,52 +138,58 @@ class SupabaseService {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return;
 
-    // 1. Upsert tiến độ bài học
-    await _client.from('user_progress').upsert({
-      'user_id': userId,
-      'course_id': courseId,
-      'lesson_id': lessonId,
-      'status': 'completed',
-      'score': score,
-      'completed_at': DateTime.now().toIso8601String(),
-    }, onConflict: 'user_id, lesson_id');
-
-    // 2. Cộng XP vào profile
-    final profile = await getCurrentProfile();
-    if (profile != null) {
-      final currentXp = profile['total_xp'] as int? ?? 0;
-      final currentStreak = profile['streak_days'] as int? ?? 0;
-      final lastActive = profile['last_active_date'] as String?;
-
-      // Tính streak
-      int newStreak = currentStreak;
-      final today = DateTime.now().toIso8601String().substring(0, 10);
-      if (lastActive == null) {
-        newStreak = 1; // Học bài đầu tiên từ lúc tạo tài khoản
-      } else if (lastActive != today) {
-        final lastDate = DateTime.parse(lastActive);
-        // Reset thời gian về 00:00:00 để so sánh số ngày chênh lệch chuẩn xác
-        final lastDateOnly = DateTime(lastDate.year, lastDate.month, lastDate.day);
-        final todayOnly = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-        final diff = todayOnly.difference(lastDateOnly).inDays;
-        
-        if (diff == 1) {
-          newStreak = currentStreak + 1; // Liên tiếp
-        } else if (diff > 1) {
-          newStreak = 1; // Reset streak vì bỏ lỡ ngày
-        }
-      }
-
-      // Tính level mới (mỗi 500 XP = 1 level)
-      final newXp = currentXp + xpEarned;
-      final newLevel = (newXp / 500).floor() + 1;
-
-      await updateProfile({
-        'total_xp': newXp,
-        'level': newLevel,
-        'streak_days': newStreak,
-        'last_active_date': today,
+    try {
+      // 1. Gọi PostgreSQL RPC an toàn với Transaction trên Database Server
+      await _client.rpc('complete_lesson_and_award_xp', params: {
+        'p_course_id': courseId,
+        'p_lesson_id': lessonId,
+        'p_score': score,
+        'p_xp_earned': xpEarned,
       });
+    } catch (_) {
+      // 2. Fallback client-side an toàn nếu môi trường dev chưa apply migration 004
+      await _client.from('user_progress').upsert({
+        'user_id': userId,
+        'course_id': courseId,
+        'lesson_id': lessonId,
+        'status': 'completed',
+        'score': score,
+        'completed_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'user_id, lesson_id');
+
+      final profile = await getCurrentProfile();
+      if (profile != null) {
+        final currentXp = profile['total_xp'] as int? ?? 0;
+        final currentStreak = profile['streak_days'] as int? ?? 0;
+        final lastActive = profile['last_active_date'] as String?;
+
+        int newStreak = currentStreak;
+        final today = DateTime.now().toIso8601String().substring(0, 10);
+        if (lastActive == null) {
+          newStreak = 1;
+        } else if (lastActive != today) {
+          final lastDate = DateTime.parse(lastActive);
+          final lastDateOnly = DateTime(lastDate.year, lastDate.month, lastDate.day);
+          final todayOnly = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+          final diff = todayOnly.difference(lastDateOnly).inDays;
+          
+          if (diff == 1) {
+            newStreak = currentStreak + 1;
+          } else if (diff > 1) {
+            newStreak = 1;
+          }
+        }
+
+        final newXp = currentXp + xpEarned;
+        final newLevel = (newXp / 500).floor() + 1;
+
+        await updateProfile({
+          'total_xp': newXp,
+          'level': newLevel,
+          'streak_days': newStreak,
+          'last_active_date': today,
+        });
+      }
     }
   }
 }
