@@ -15,6 +15,16 @@
     "leaderboard": "Bảng xếp hạng",
     "profile": "Hồ sơ"
   },
+  "home": {
+    "daily_goal": "Mục tiêu hàng ngày",
+    "up_next": "Bài học kế tiếp",
+    "recommended": "Gợi ý cho bạn",
+    "see_all": "Xem tất cả",
+    "vocab_quiz": "Luyện từ vựng",
+    "vocab_subtitle": "5 phút",
+    "speaking": "Luyện nói",
+    "speaking_subtitle": "3 phút"
+  },
   "courses": {
     "search_hint": "Tìm kiếm khóa học...",
     "no_courses_found": "Không tìm thấy khóa học nào",
@@ -48,5 +58,19 @@
     "correct_count": "câu đúng",
     "btn_continue": "TIẾP TỤC",
     "btn_retry": "HỌC LẠI"
+  },
+  "profile": {
+    "title": "Hồ sơ của bạn",
+    "logout": "Đăng xuất",
+    "logout_confirm": "Bạn có chắc chắn muốn đăng xuất không?",
+    "cancel": "Hủy",
+    "retry": "Thử lại",
+    "load_failed": "Không thể tải hồ sơ"
+  },
+  "leaderboard": {
+    "this_week": "Tuần này",
+    "this_month": "Tháng này",
+    "all_time": "Mọi lúc",
+    "empty": "Chưa có dữ liệu bảng xếp hạng."
   }
 }

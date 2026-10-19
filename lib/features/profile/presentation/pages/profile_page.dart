@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/core/widgets/skeleton_loading.dart';
@@ -38,12 +39,18 @@ class ProfilePage extends ConsumerWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20),
-          onPressed: () {},
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: AppColors.textPrimary, size: 24),
-            onPressed: () {},
+            onPressed: () => _showLogoutDialog(context, ref),
           ),
         ],
       ),
@@ -56,11 +63,11 @@ class ProfilePage extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline_rounded, size: 48, color: Color(0xFFE57373)),
               const SizedBox(height: 16),
-              const Text('Không thể tải hồ sơ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              Text('profile.load_failed'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
               TextButton(
                 onPressed: () => ref.invalidate(profileDataProvider),
-                child: const Text('Thử lại'),
+                child: Text('profile.retry'.tr()),
               ),
             ],
           ),
@@ -93,7 +100,7 @@ class ProfilePage extends ConsumerWidget {
                             child: Image.network(
                               profile.avatarUrl,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => _buildDefaultAvatar(profile.fullName),
+                              errorBuilder: (_, _, _) => _buildDefaultAvatar(profile.fullName),
                             ),
                           )
                         : _buildDefaultAvatar(profile.fullName),
@@ -291,7 +298,7 @@ class ProfilePage extends ConsumerWidget {
           border: Border.all(color: const Color(0xFFEEEEEE), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -346,7 +353,7 @@ class ProfilePage extends ConsumerWidget {
             boxShadow: [
               if (isCompleted)
                 BoxShadow(
-                  color: const Color(0xFF4FC3F7).withOpacity(0.1),
+                  color: const Color(0xFF4FC3F7).withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -357,7 +364,7 @@ class ProfilePage extends ConsumerWidget {
             child: Icon(
               icon,
               size: 32,
-              color: isCompleted ? const Color(0xFF4FC3F7) : Colors.grey.withOpacity(0.5),
+              color: isCompleted ? const Color(0xFF4FC3F7) : Colors.grey.withValues(alpha: 0.5),
             ),
           ),
         ),
@@ -418,20 +425,20 @@ class ProfilePage extends ConsumerWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Đăng xuất',
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
+        title: Text(
+          'profile.logout'.tr(),
+          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
         ),
-        content: const Text(
-          'Bạn có chắc chắn muốn đăng xuất không?',
-          style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
+        content: Text(
+          'profile.logout_confirm'.tr(),
+          style: const TextStyle(fontSize: 15, color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text(
-              'Hủy',
-              style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+            child: Text(
+              'profile.cancel'.tr(),
+              style: const TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600),
             ),
           ),
           TextButton(
@@ -440,9 +447,9 @@ class ProfilePage extends ConsumerWidget {
               ref.read(authProvider.notifier).signOut(); // Gọi đăng xuất
               context.go('/'); // Chuyển về màn hình Welcome
             },
-            child: const Text(
-              'Đăng xuất',
-              style: TextStyle(color: Color(0xFFE57373), fontWeight: FontWeight.w700),
+            child: Text(
+              'profile.logout'.tr(),
+              style: const TextStyle(color: Color(0xFFE57373), fontWeight: FontWeight.w700),
             ),
           ),
         ],

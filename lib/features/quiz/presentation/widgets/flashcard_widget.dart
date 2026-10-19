@@ -123,7 +123,7 @@ class _FlashcardWidgetState extends State<FlashcardWidget> with SingleTickerProv
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFF58CC02).withOpacity(0.15),
+            color: const Color(0xFF58CC02).withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(100),
           ),
           child: Text(

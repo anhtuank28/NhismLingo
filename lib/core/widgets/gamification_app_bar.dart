@@ -90,7 +90,7 @@ class GamificationAppBar extends ConsumerWidget implements PreferredSizeWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: textColor.withOpacity(0.05),
+        color: textColor.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

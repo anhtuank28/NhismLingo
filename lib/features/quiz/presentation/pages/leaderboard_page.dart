@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/features/quiz/domain/models/leaderboard_user_model.dart';
 import 'package:nhims_lingo/features/quiz/presentation/providers/leaderboard_provider.dart';
@@ -52,7 +53,7 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
                 error: (error, stack) => Center(child: Text('Lỗi: $error')),
                 data: (users) {
                   if (users.isEmpty) {
-                    return const Center(child: Text('Chưa có dữ liệu bảng xếp hạng.'));
+                    return Center(child: Text('leaderboard.empty'.tr()));
                   }
                   
                   return SingleChildScrollView(
@@ -107,9 +108,9 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
         ),
         child: Row(
           children: [
-            _buildTabItem(0, 'Tuần này'),
-            _buildTabItem(1, 'Tháng này'),
-            _buildTabItem(2, 'Mọi lúc'),
+            _buildTabItem(0, 'leaderboard.this_week'.tr()),
+            _buildTabItem(1, 'leaderboard.this_month'.tr()),
+            _buildTabItem(2, 'leaderboard.all_time'.tr()),
           ],
         ),
       ),
@@ -129,7 +130,7 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     )
@@ -328,7 +329,7 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Text(
@@ -353,7 +354,7 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.share_rounded, color: Color(0xFF004D1E), size: 20),
@@ -460,7 +461,7 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> {
                       ? user.avatarUrl 
                       : 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(user.name)}&background=random',
                 ),
-                onBackgroundImageError: (_, __) {},
+                onBackgroundImageError: (_, _) {},
                 backgroundColor: AppColors.borderGrey,
               ),
             ],

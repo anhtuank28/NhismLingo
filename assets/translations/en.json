@@ -15,6 +15,16 @@
     "leaderboard": "Rank",
     "profile": "Profile"
   },
+  "home": {
+    "daily_goal": "Daily Goal",
+    "up_next": "Up Next",
+    "recommended": "Recommended",
+    "see_all": "See All",
+    "vocab_quiz": "Vocab Quiz",
+    "vocab_subtitle": "5 mins",
+    "speaking": "Speaking",
+    "speaking_subtitle": "3 mins"
+  },
   "courses": {
     "search_hint": "Search courses...",
     "no_courses_found": "No courses found",
@@ -48,5 +58,19 @@
     "correct_count": "correct answers",
     "btn_continue": "CONTINUE",
     "btn_retry": "TRY AGAIN"
+  },
+  "profile": {
+    "title": "Your Profile",
+    "logout": "Log Out",
+    "logout_confirm": "Are you sure you want to log out?",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "load_failed": "Unable to load profile"
+  },
+  "leaderboard": {
+    "this_week": "This Week",
+    "this_month": "This Month",
+    "all_time": "All Time",
+    "empty": "No leaderboard data yet."
   }
 }

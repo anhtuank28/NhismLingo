@@ -90,7 +90,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           // Soft overlay
           Positioned.fill(
             child: Container(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
             ),
           ),
           // Content
@@ -101,11 +101,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 child: Container(
                   padding: const EdgeInsets.all(32.0),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.95),
+                    color: Colors.white.withValues(alpha: 0.95),
                     borderRadius: BorderRadius.circular(32),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),

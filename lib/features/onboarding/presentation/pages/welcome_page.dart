@@ -34,7 +34,7 @@ class WelcomePage extends ConsumerWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primaryBlue.withOpacity(0.08),
+                          color: AppColors.primaryBlue.withValues(alpha: 0.08),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -55,7 +55,7 @@ class WelcomePage extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.15),
+                            color: Colors.black.withValues(alpha: 0.15),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),

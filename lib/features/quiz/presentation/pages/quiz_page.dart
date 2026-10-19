@@ -427,11 +427,15 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       curve: Curves.easeOut,
       height: showButton ? 100 : 0,
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+      clipBehavior: Clip.hardEdge,
+      decoration: const BoxDecoration(),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 200),
         opacity: showButton ? 1.0 : 0.0,
-        child: Column(
-          children: [
+        child: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Column(
+            children: [
             SizedBox(
               width: double.infinity,
               height: 56,
@@ -448,12 +452,13 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: 1,
+                    letterSpacing: 1.2,
                   ),
                 ),
               ),
             ),
           ],
+        ),
         ),
       ),
     );

@@ -36,8 +36,8 @@ class MapEnvironmentPainter extends CustomPainter {
     final paint = Paint()
       ..shader = RadialGradient(
         colors: [
-          Colors.white.withOpacity(0.4),
-          Colors.white.withOpacity(0.0),
+          Colors.white.withValues(alpha: 0.4),
+          Colors.white.withValues(alpha: 0.0),
         ],
         center: const Alignment(-1.0, -1.0),
         radius: 2.0,
@@ -108,13 +108,7 @@ class MapEnvironmentPainter extends CustomPainter {
 
     // Vẽ 1 bông hoa trên cỏ
     final flowerCenter = Offset(center.dx - 5, center.dy - 8);
-    // 5 cánh hoa
-    for (int i = 0; i < 5; i++) {
-      final double angle = (i * 72) * 3.14159 / 180;
-      final double px = flowerCenter.dx + 6 * (1.0 * DateTime.now().minute == 0 ? 1 : 1); // Mock math
-      final dx = flowerCenter.dx + 6 * 1.0 * (angle > 1.5 && angle < 4.5 ? -1 : 1); // Đơn giản hóa
-      // Để dễ, vẽ 4 cánh quanh nhụy
-    }
+    // 5 cánh hoa (đã vẽ thủ công bên dưới để tối ưu hiệu năng thay vì dùng lượng giác)
     
     // Vẽ cánh hoa thủ công
     canvas.drawCircle(Offset(flowerCenter.dx, flowerCenter.dy - 5), 4, petalPaint);
@@ -128,8 +122,8 @@ class MapEnvironmentPainter extends CustomPainter {
 
   // --- VẼ MÂY (Clouds) ---
   void _drawCloud(Canvas canvas, Offset center) {
-    final cloudPaint = Paint()..color = Colors.white.withOpacity(0.8);
-    final shadowPaint = Paint()..color = Colors.blueGrey.withOpacity(0.1);
+    final cloudPaint = Paint()..color = Colors.white.withValues(alpha: 0.8);
+    final shadowPaint = Paint()..color = Colors.blueGrey.withValues(alpha: 0.1);
 
     // Đổ bóng mây
     canvas.drawCircle(Offset(center.dx, center.dy + 4), 24, shadowPaint);
