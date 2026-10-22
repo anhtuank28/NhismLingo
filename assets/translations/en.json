@@ -37,7 +37,10 @@
       "all": "All",
       "speaking": "Speaking",
       "vocabulary": "Vocabulary",
-      "grammar": "Grammar"
+      "grammar": "Grammar",
+      "giao_tiep": "Communication",
+      "cong_so": "Business",
+      "du_lich": "Travel"
     }
   },
   "quiz": {

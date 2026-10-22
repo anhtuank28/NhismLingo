@@ -7,11 +7,13 @@ import 'package:nhims_lingo/core/services/audio_service.dart';
 class WordMatchingWidget extends StatefulWidget {
   final QuizQuestionModel question;
   final VoidCallback onCorrectAnswer;
+  final VoidCallback? onWrongAnswer;
 
   const WordMatchingWidget({
     super.key,
     required this.question,
     required this.onCorrectAnswer,
+    this.onWrongAnswer,
   });
 
   @override
@@ -85,6 +87,7 @@ class _WordMatchingWidgetState extends State<WordMatchingWidget> {
         // Sai -> Tạm thời gán để hiện màu đỏ, sau 500ms bỏ chọn
         AudioService.instance.playWrongSound();
         HapticFeedback.heavyImpact();
+        widget.onWrongAnswer?.call();
         setState(() {
           _selectedItem = null;
         });

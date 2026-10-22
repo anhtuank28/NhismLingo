@@ -8,11 +8,13 @@ import 'package:nhims_lingo/core/services/audio_service.dart';
 class ListeningWidget extends StatefulWidget {
   final QuizQuestionModel question;
   final VoidCallback onCorrectAnswer;
+  final VoidCallback? onWrongAnswer;
 
   const ListeningWidget({
     super.key,
     required this.question,
     required this.onCorrectAnswer,
+    this.onWrongAnswer,
   });
 
   @override
@@ -58,6 +60,7 @@ class _ListeningWidgetState extends State<ListeningWidget> {
     } else {
       AudioService.instance.playWrongSound();
       HapticFeedback.heavyImpact();
+      widget.onWrongAnswer?.call();
     }
   }
 

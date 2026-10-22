@@ -501,11 +501,26 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                           onWrongAnswer: _onWrongAnswer,
                         );
                       case QuestionType.fillInTheBlank:
-                        return FillInBlankWidget(key: key, question: question, onCorrectAnswer: _onCorrectAnswer);
+                        return FillInBlankWidget(
+                          key: key,
+                          question: question,
+                          onCorrectAnswer: _onCorrectAnswer,
+                          onWrongAnswer: _onWrongAnswer,
+                        );
                       case QuestionType.listening:
-                        return ListeningWidget(key: key, question: question, onCorrectAnswer: _onCorrectAnswer);
+                        return ListeningWidget(
+                          key: key,
+                          question: question,
+                          onCorrectAnswer: _onCorrectAnswer,
+                          onWrongAnswer: _onWrongAnswer,
+                        );
                       case QuestionType.wordMatching:
-                        return WordMatchingWidget(key: key, question: question, onCorrectAnswer: _onCorrectAnswer);
+                        return WordMatchingWidget(
+                          key: key,
+                          question: question,
+                          onCorrectAnswer: _onCorrectAnswer,
+                          onWrongAnswer: _onWrongAnswer,
+                        );
                     }
                   }
                 ),

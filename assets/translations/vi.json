@@ -35,9 +35,12 @@
     "btn_start_now": "Bắt đầu ngay",
     "categories": {
       "all": "Tất cả",
-      "speaking": "Giao tiếp",
+      "speaking": "Luyện nói",
       "vocabulary": "Từ vựng",
-      "grammar": "Ngữ pháp"
+      "grammar": "Ngữ pháp",
+      "giao_tiep": "Giao tiếp",
+      "cong_so": "Công sở",
+      "du_lich": "Du lịch"
     }
   },
   "quiz": {
