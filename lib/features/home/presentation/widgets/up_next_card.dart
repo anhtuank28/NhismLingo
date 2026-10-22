@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
+import 'package:nhims_lingo/core/widgets/tactile_3d_button.dart';
 import 'package:nhims_lingo/features/home/data/mock_home_data.dart';
 
 class UpNextCard extends StatelessWidget {
@@ -152,8 +153,14 @@ class UpNextCard extends StatelessWidget {
               ),
               const SizedBox(width: 24),
               
-              // Continue Button
-              ElevatedButton.icon(
+              // Continue Button with 3D tactile feedback
+              Tactile3DButton(
+                text: 'Continue',
+                icon: Icons.play_arrow_rounded,
+                variant: TactileButtonVariant.primary,
+                height: 44,
+                borderRadius: 100,
+                isFullWidth: false,
                 onPressed: () {
                   if (onContinue != null) {
                     onContinue!();
@@ -163,22 +170,7 @@ class UpNextCard extends StatelessWidget {
                     context.go('/courses');
                   }
                 },
-                icon: const Icon(Icons.play_arrow_rounded, size: 16),
-                label: const Text('Continue'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              )
+              ),
             ],
           )
         ],

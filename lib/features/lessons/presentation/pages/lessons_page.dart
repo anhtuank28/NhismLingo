@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/core/widgets/skeleton_loading.dart';
 import 'package:nhims_lingo/core/widgets/gamification_app_bar.dart';
+import 'package:nhims_lingo/core/widgets/nhism_mascot_widget.dart';
+import 'package:nhims_lingo/core/widgets/tactile_3d_button.dart';
 import 'package:nhims_lingo/features/lessons/data/lessons_provider.dart';
 import 'package:nhims_lingo/features/lessons/domain/models/lesson_model.dart';
 import 'package:nhims_lingo/features/lessons/presentation/widgets/lesson_node_widget.dart';
@@ -159,31 +161,40 @@ class LessonsPage extends ConsumerWidget {
             lesson.title,
             style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.textPrimary),
           ),
-          content: Text(
-            lesson.status == LessonStatus.current
-                ? 'Bạn đã sẵn sàng vượt ải này chưa?'
-                : 'Bạn muốn quay lại ôn tập ải này?',
-            style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              NhismMascotWidget(
+                mood: lesson.status == LessonStatus.current ? MascotMood.happy : MascotMood.curious,
+                speechBubbleText: lesson.status == LessonStatus.current
+                    ? 'Bé Nhím sẵn sàng rồi! Vào việc thôi!'
+                    : 'Ôn tập lại để nhớ thật lâu nha!',
+                size: 90,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Vượt ải này để nhận +${lesson.totalExp} XP và tích lũy đá quý nhé!',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+              ),
+            ],
           ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
               child: const Text('ĐỂ SAU', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
             ),
-            ElevatedButton(
+            Tactile3DButton(
+              text: 'CHIẾN LUÔN!',
+              variant: TactileButtonVariant.primary,
+              height: 46,
+              borderRadius: 16,
+              isFullWidth: false,
               onPressed: () {
-                Navigator.pop(ctx); // Đóng popup
-                // Navigate sang QuizPage với lessonId + courseId
+                Navigator.pop(ctx);
                 context.push('/quiz/${lesson.id}?courseId=${courseId ?? ''}');
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                elevation: 4,
-              ),
-              child: const Text('CHIẾN LUÔN!', style: TextStyle(fontWeight: FontWeight.w900)),
             ),
           ],
         );
@@ -209,13 +220,10 @@ class LessonsPage extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryBlue.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.menu_book_rounded, size: 64, color: AppColors.primaryBlue),
+              const NhismMascotWidget(
+                mood: MascotMood.curious,
+                speechBubbleText: 'Bạn ơi, chọn một khóa học để cùng phiêu lưu nhé!',
+                size: 110,
               ),
               const SizedBox(height: 24),
               const Text(
@@ -224,20 +232,17 @@ class LessonsPage extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               const Text(
-                'Hãy vào tab Khóa học và chọn một khóa để bắt đầu hành trình học tập! 🦔',
+                'Hãy vào tab Khóa học và chọn một khóa để bắt đầu hành trình học tập!',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.5),
               ),
               const SizedBox(height: 32),
-              ElevatedButton(
+              Tactile3DButton(
+                text: 'XEM KHÓA HỌC',
+                variant: TactileButtonVariant.primary,
+                icon: Icons.explore_rounded,
+                isFullWidth: false,
                 onPressed: () => context.go('/courses'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                ),
-                child: const Text('XEM KHÓA HỌC', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
               ),
             ],
           ),
@@ -251,7 +256,11 @@ class LessonsPage extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.hourglass_empty_rounded, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.3)),
+          const NhismMascotWidget(
+            mood: MascotMood.worried,
+            speechBubbleText: 'Chưa có bài học nào hết trơn!',
+            size: 100,
+          ),
           const SizedBox(height: 16),
           const Text(
             'Chưa có bài học nào',
@@ -274,21 +283,24 @@ class LessonsPage extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline_rounded, size: 64, color: Colors.redAccent.withValues(alpha: 0.5)),
+            const NhismMascotWidget(
+              mood: MascotMood.worried,
+              speechBubbleText: 'Ôi mạng chập chờn quá bạn ơi!',
+              size: 100,
+            ),
             const SizedBox(height: 16),
             const Text('Lỗi tải bài học', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
             Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textSecondary)),
             const SizedBox(height: 24),
-            ElevatedButton.icon(
+            Tactile3DButton(
+              text: 'Thử lại',
+              icon: Icons.refresh_rounded,
+              variant: TactileButtonVariant.primary,
+              height: 46,
+              borderRadius: 16,
+              isFullWidth: false,
               onPressed: () => ref.invalidate(lessonsProvider(courseId!)),
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Thử lại'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
             ),
           ],
         ),

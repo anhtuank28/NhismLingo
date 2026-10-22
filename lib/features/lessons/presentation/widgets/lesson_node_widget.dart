@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:nhims_lingo/features/lessons/domain/models/lesson_model.dart';
 
@@ -17,7 +18,14 @@ class LessonNodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: lesson.status != LessonStatus.locked ? onTap : null,
+      onTap: () {
+        if (lesson.status != LessonStatus.locked) {
+          HapticFeedback.lightImpact();
+          onTap?.call();
+        } else {
+          HapticFeedback.selectionClick();
+        }
+      },
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
         width: 140,

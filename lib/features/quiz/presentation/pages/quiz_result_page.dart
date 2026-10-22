@@ -1,9 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rive/rive.dart';
 import 'package:confetti/confetti.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
+import 'package:nhims_lingo/core/widgets/nhism_mascot_widget.dart';
+import 'package:nhims_lingo/core/widgets/tactile_3d_button.dart';
 
 class QuizResultPage extends StatefulWidget {
   final int score;
@@ -116,13 +117,14 @@ class _QuizResultPageState extends State<QuizResultPage> with TickerProviderStat
                   const Spacer(flex: 1),
 
                   // ===== EMOJI + TIÊU ĐỀ =====
-                  SizedBox(
-                    height: 120,
-                    width: 120,
-                    child: const RiveAnimation.asset(
-                      'assets/rive/hedgehog.riv',
-                      fit: BoxFit.contain,
-                    ),
+                  NhismMascotWidget(
+                    mood: isGreat ? MascotMood.celebrate : (isGood ? MascotMood.happy : MascotMood.worried),
+                    speechBubbleText: isPerfect
+                        ? 'Đỉnh nóc kịch trần! 🌟'
+                        : isGreat
+                            ? 'Bé Nhím tự hào về bạn! 🎉'
+                            : 'Cố lên, luyện thêm chút nữa nào! 💪',
+                    size: 110,
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -279,48 +281,26 @@ class _QuizResultPageState extends State<QuizResultPage> with TickerProviderStat
 
                   const Spacer(flex: 2),
 
-                  // ===== NÚT BẤM =====
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Quay về bản đồ bài học (pop quiz + quiz-result)
-                        context.go('/lessons/${widget.courseId}');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.successGreen,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      ),
-                      child: const Text(
-                        'TIẾP TỤC',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1),
-                      ),
-                    ),
+                  // ===== NÚT BẤM 3D TACTILE =====
+                  Tactile3DButton(
+                    text: 'TIẾP TỤC',
+                    variant: TactileButtonVariant.success,
+                    icon: Icons.check_circle_rounded,
+                    onPressed: () {
+                      context.go('/lessons/${widget.courseId}');
+                    },
                   ),
                   const SizedBox(height: 12),
 
                   // Nút "Học lại"
                   if (!isGreat)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: OutlinedButton(
-                        onPressed: () {
-                          context.pushReplacement('/quiz/${widget.lessonId}?courseId=${widget.courseId}');
-                        },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.primaryBlue,
-                          side: const BorderSide(color: AppColors.primaryBlue, width: 2),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        ),
-                        child: const Text(
-                          'HỌC LẠI',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1),
-                        ),
-                      ),
+                    Tactile3DButton(
+                      text: 'HỌC LẠI',
+                      variant: TactileButtonVariant.secondary,
+                      icon: Icons.replay_rounded,
+                      onPressed: () {
+                        context.pushReplacement('/quiz/${widget.lessonId}?courseId=${widget.courseId}');
+                      },
                     ),
 
                   const SizedBox(height: 32),

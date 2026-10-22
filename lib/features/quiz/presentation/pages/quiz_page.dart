@@ -13,6 +13,10 @@ import 'package:nhims_lingo/features/quiz/presentation/widgets/listening_widget.
 import 'package:nhims_lingo/features/quiz/presentation/widgets/word_matching_widget.dart';
 import 'package:nhims_lingo/features/lessons/data/lessons_provider.dart';
 import 'package:nhims_lingo/features/courses/data/courses_provider.dart';
+import 'package:nhims_lingo/core/widgets/tactile_3d_button.dart';
+import 'package:nhims_lingo/core/providers/hearts_provider.dart';
+import 'package:nhims_lingo/core/theme/app_typography.dart';
+import 'package:nhims_lingo/core/widgets/nhism_mascot_widget.dart';
 
 class QuizPage extends ConsumerStatefulWidget {
   final String lessonId;
@@ -105,6 +109,68 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     });
   }
 
+  void _onWrongAnswer() {
+    final stillAlive = ref.read(heartsProvider.notifier).loseHeart();
+    if (!stillAlive) {
+      _showOutOfHeartsModal(context);
+    }
+  }
+
+  void _showOutOfHeartsModal(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.heart_broken_rounded, color: AppColors.heartRed, size: 36),
+            SizedBox(width: 8),
+            Text('Hết Trái tim rồi!', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.heartRed)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const NhismMascotWidget(
+              mood: MascotMood.worried,
+              speechBubbleText: 'Đừng bỏ cuộc nha! Nạp tim để học tiếp nào!',
+              size: 100,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Bạn đã dùng hết 5 Trái tim. Bạn có muốn nạp đầy 5 Trái tim miễn phí để tiếp tục làm bài không?',
+              textAlign: TextAlign.center,
+              style: AppTypography.body,
+            ),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.go('/lessons/${widget.courseId}');
+            },
+            child: const Text('VỀ BẢN ĐỒ', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
+          ),
+          Tactile3DButton(
+            text: 'HỒI PHỤC NGAY (FREE)',
+            variant: TactileButtonVariant.danger,
+            height: 46,
+            borderRadius: 16,
+            isFullWidth: false,
+            onPressed: () {
+              ref.read(heartsProvider.notifier).refillHearts();
+              Navigator.pop(ctx);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _goNext() async {
     if (_isLearningPhase) {
       if (_currentIndex < _flashcards.length - 1) {
@@ -147,14 +213,30 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           textAlign: TextAlign.center,
           style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textPrimary),
         ),
-        content: const Text(
-          'Bạn đã sẵn sàng để kiểm tra trí nhớ chưa?',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            NhismMascotWidget(
+              mood: MascotMood.celebrate,
+              speechBubbleText: 'Học từ mới xịn quá! Cùng chiến bài tập nào!',
+              size: 90,
+            ),
+            SizedBox(height: 12),
+            Text(
+              'Bạn đã sẵn sàng để kiểm tra trí nhớ chưa?',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
+            ),
+          ],
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
-          ElevatedButton(
+          Tactile3DButton(
+            text: 'BẮT ĐẦU LÀM BÀI',
+            variant: TactileButtonVariant.primary,
+            height: 46,
+            borderRadius: 16,
+            isFullWidth: false,
             onPressed: () {
               Navigator.pop(ctx);
               setState(() {
@@ -163,13 +245,6 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                 _canProceed = false;
               });
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryBlue,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-            ),
-            child: const Text('BẮT ĐẦU LÀM BÀI', style: TextStyle(fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -302,13 +377,14 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
     final question = currentList[_currentIndex];
     final progress = (_currentIndex + 1) / currentList.length;
+    final hearts = ref.watch(heartsProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            // ===== HEADER: Progress Bar + Close Button =====
+            // ===== HEADER: Progress Bar + Close Button + Hearts =====
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -324,7 +400,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                       child: const Icon(Icons.close_rounded, color: AppColors.textSecondary, size: 24),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 14),
 
                   Expanded(
                     child: Column(
@@ -351,6 +427,35 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+
+                  // Hearts Badge (❤️ 5)
+                  GestureDetector(
+                    onTap: () => _showHeartsRefillDialog(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightHeartBg,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppColors.heartRed.withValues(alpha: 0.2), width: 1.5),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.favorite_rounded, color: AppColors.heartRed, size: 20),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$hearts',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.heartRed,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -389,7 +494,12 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                           child: FlashcardWidget(key: key, question: question),
                         );
                       case QuestionType.multipleChoice:
-                        return MultipleChoiceWidget(key: key, question: question, onCorrectAnswer: _onCorrectAnswer);
+                        return MultipleChoiceWidget(
+                          key: key,
+                          question: question,
+                          onCorrectAnswer: _onCorrectAnswer,
+                          onWrongAnswer: _onWrongAnswer,
+                        );
                       case QuestionType.fillInTheBlank:
                         return FillInBlankWidget(key: key, question: question, onCorrectAnswer: _onCorrectAnswer);
                       case QuestionType.listening:
@@ -436,30 +546,57 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           physics: const NeverScrollableScrollPhysics(),
           child: Column(
             children: [
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: showButton ? _goNext : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isLast ? AppColors.successGreen : AppColors.primaryBlue,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-                child: Text(
-                  buttonText,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ),
+            Tactile3DButton(
+              text: buttonText,
+              variant: isLast ? TactileButtonVariant.success : TactileButtonVariant.primary,
+              onPressed: showButton ? _goNext : null,
+              height: 54,
             ),
           ],
         ),
         ),
+      ),
+    );
+  }
+
+  void _showHeartsRefillDialog(BuildContext context) {
+    final hearts = ref.read(heartsProvider);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Row(
+          children: [
+            const Icon(Icons.favorite_rounded, color: AppColors.heartRed, size: 32),
+            const SizedBox(width: 8),
+            Text('$hearts/5 Trái tim', style: AppTypography.heading2),
+          ],
+        ),
+        content: Text(
+          hearts == 5
+              ? 'Bạn đang có đủ 5 Trái tim! Mỗi khi trả lời sai sẽ bị mất 1 tim. Hãy cẩn thận nhé!'
+              : 'Bạn còn $hearts tim. Khi hết tim, bạn sẽ phải bắt đầu lại bài học. Bạn có muốn nạp đầy 5 tim ngay bây giờ không?',
+          style: AppTypography.body,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('ĐÓNG', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
+          ),
+          if (hearts < 5)
+            ElevatedButton(
+              onPressed: () {
+                ref.read(heartsProvider.notifier).refillHearts();
+                Navigator.pop(ctx);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.heartRed,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              child: const Text('HỒI PHỤC NGAY (FREE)', style: TextStyle(fontWeight: FontWeight.w800)),
+            ),
+        ],
       ),
     );
   }

@@ -6,11 +6,13 @@ import 'package:nhims_lingo/core/services/audio_service.dart';
 class MultipleChoiceWidget extends StatefulWidget {
   final QuizQuestionModel question;
   final VoidCallback onCorrectAnswer;
+  final VoidCallback? onWrongAnswer;
 
   const MultipleChoiceWidget({
     super.key,
     required this.question,
     required this.onCorrectAnswer,
+    this.onWrongAnswer,
   });
 
   @override
@@ -48,6 +50,7 @@ class _MultipleChoiceWidgetState extends State<MultipleChoiceWidget> {
     } else {
       AudioService.instance.playWrongSound();
       HapticFeedback.heavyImpact();
+      widget.onWrongAnswer?.call();
     }
   }
 

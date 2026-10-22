@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:nhims_lingo/core/theme/app_colors.dart';
 import 'package:nhims_lingo/core/widgets/gamification_app_bar.dart';
 import 'package:nhims_lingo/core/widgets/skeleton_loading.dart';
+import 'package:nhims_lingo/core/widgets/nhism_mascot_widget.dart';
+import 'package:nhims_lingo/core/widgets/tactile_3d_button.dart';
 import 'package:nhims_lingo/features/courses/data/courses_provider.dart';
 import 'package:nhims_lingo/features/courses/domain/models/course_model.dart';
 import 'package:nhims_lingo/features/courses/presentation/widgets/course_list_item.dart';
@@ -247,7 +249,11 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.wifi_off_rounded, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.3)),
+            const NhismMascotWidget(
+              mood: MascotMood.worried,
+              speechBubbleText: 'Ôi mạng chập chờn quá bạn ơi!',
+              size: 100,
+            ),
             const SizedBox(height: 16),
             const Text(
               'Không thể tải khóa học',
@@ -260,16 +266,14 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
               style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 24),
-            ElevatedButton.icon(
+            Tactile3DButton(
+              text: 'Thử lại',
+              icon: Icons.refresh_rounded,
+              variant: TactileButtonVariant.primary,
+              height: 46,
+              borderRadius: 16,
+              isFullWidth: false,
               onPressed: () => ref.invalidate(coursesProvider),
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Thử lại', style: TextStyle(fontWeight: FontWeight.w700)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
             ),
           ],
         ),
@@ -282,10 +286,10 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.menu_book_rounded,
-            size: 64,
-            color: AppColors.textSecondary.withValues(alpha: 0.2),
+          const NhismMascotWidget(
+            mood: MascotMood.curious,
+            speechBubbleText: 'Hổng tìm thấy khóa học nào hết trơn!',
+            size: 100,
           ),
           const SizedBox(height: 16),
           Text(
